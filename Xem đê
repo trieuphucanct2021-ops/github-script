@@ -1,0 +1,91 @@
+-- Tạo Frame chính
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 100)
+frame.Position = UDim2.new(0.5, -100, 0.5, -50)
+frame.BackgroundColor3 = Color3.new(1, 1, 1) -- màu trắng
+frame.AnchorPoint = Vector2.new(0.5, 0.5)
+frame.Parent = gui
+
+-- Thêm viền cầu vồng
+local stroke = Instance.new("UIStroke")
+stroke.Thickness = 3
+stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+stroke.Parent = frame
+
+-- Cập nhật màu viền cầu vồng
+local hue = 0
+game:GetService("RunService").RenderStepped:Connect(function()
+	hue = (hue + 0.01) % 1
+	stroke.Color = ColorSequence.new(Color3.fromHSV(hue, 1, 1))
+end)
+
+-- Tạo nút
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 100, 0, 40)
+button.Position = UDim2.new(0.5, -50, 0.5, -20)
+button.BackgroundColor3 = Color3.fromRGB(230, 230, 230)
+button.Text = "OFF"
+button.Font = Enum.Font.SourceSansBold
+button.TextSize = 24
+button.TextColor3 = Color3.new(0, 0, 0)
+button.Parent = frame
+
+-- Anti-AFK logic
+local connection = nil
+local userInput = game:GetService("VirtualUser")
+
+button.MouseButton1Click:Connect(function()
+	if button.Text == "OFF" then
+		button.Text = "ON"
+		connection = player.Idled:Connect(function()
+			userInput:Button2Down(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+			wait(1)
+			userInput:Button2Up(Vector2.new(0, 0), workspace.CurrentCamera.CFrame)
+		end)
+	else
+		button.Text = "OFF"
+		if connection then
+			connection:Disconnect()
+			connection = nil
+		end
+	end
+end)
+
+-- 🌈 Dòng chữ "GUI này của An" có hiệu ứng cầu vồng
+local credit = Instance.new("TextLabel")
+credit.Size = UDim2.new(1, 0, 0, 20)
+credit.Position = UDim2.new(0, 0, 1, 0)
+credit.BackgroundTransparency = 1
+credit.Text = "GUI này của An"
+credit.Font = Enum.Font.SourceSansBold
+credit.TextSize = 18
+credit.TextStrokeTransparency = 0.4
+credit.Parent = frame
+
+-- Hiệu ứng màu cầu vồng
+local hueCredit = 0
+game:GetService("RunService").RenderStepped:Connect(function()
+	hueCredit = (hueCredit + 0.01) % 1
+	credit.TextColor3 = Color3.fromHSV(hueCredit, 1, 1)
+end)
+
+-- 🌈 Dòng chữ "Chống AFK" với hiệu ứng cầu vồng
+local afkLabel = Instance.new("TextLabel")
+afkLabel.Size = UDim2.new(1, 0, 0, 20)
+afkLabel.Position = UDim2.new(0, 0, 1, 20)
+afkLabel.BackgroundTransparency = 1
+afkLabel.Text = "Chống AFK"
+afkLabel.Font = Enum.Font.SourceSansBold
+afkLabel.TextSize = 18
+afkLabel.TextStrokeTransparency = 0.4
+afkLabel.Parent = frame
+
+-- Hiệu ứng cầu vồng cho "Chống AFK"
+local hueAfk = 0
+game:GetService("RunService").RenderStepped:Connect(function()
+	hueAfk = (hueAfk + 0.01) % 1
+	afkLabel.TextColor3 = Color3.fromHSV(hueAfk, 1, 1)
+end)
+
+frame.Active = true
+frame.Draggable = true
